@@ -10,6 +10,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 
 @Entity
 @Table(name = "pessoa")
@@ -21,7 +24,7 @@ public class Pessoa {
 	@Column(nullable = false, length = 255)
 	private String nome;
 	
-	
+	@Temporal(TemporalType.DATE)
 	private Date data_nasc;
 	
 	@Column(nullable = false, length = 11, unique = true)

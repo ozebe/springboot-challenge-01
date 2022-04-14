@@ -42,8 +42,13 @@ public class PessoaController {
 	private PessoaService pessoaService;
 	
 	@GetMapping
-	public Page<PessoaDto> getPessoas(@RequestParam(required = false) String cpf, @PageableDefault(sort = "id", direction = Direction.ASC) Pageable paginacao){
-		return pessoaService.getPessoas(cpf, paginacao);
+	public Page<PessoaDto> getPessoas(@RequestParam(required = false) String cpf, @RequestParam(required = false) String nome, @PageableDefault(sort = "id", direction = Direction.ASC) Pageable paginacao){
+		return pessoaService.getPessoas(cpf, nome, paginacao);
+	}
+	
+	@GetMapping("/pesoIdeal/{id}")
+	public ResponseEntity<?> getPesoIdealPessoa(@PathVariable("id") Long codigo){
+		return pessoaService.calculaPesoIdealPessoa(codigo);
 	}
 	
     @PostMapping

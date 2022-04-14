@@ -25,14 +25,27 @@ public class PessoaService {
 		this.pessoaRepository = pessoaRepository;
 	}
 	
-	public Page<PessoaDto> getPessoas(String cpf, Pageable paginacao){
-		if(cpf == null) {
-			Page<Pessoa> pessoas = pessoaRepository.findAll(paginacao);
-			return PessoaDto.converter(pessoas);
-		}else {
+	public Page<PessoaDto> getPessoas(String cpf, String nome, Pageable paginacao){
+		if(cpf != null) {
 			Page<Pessoa> pessoas = pessoaRepository.findByCpf(cpf, paginacao);
 			return PessoaDto.converter(pessoas);
 		}
+		
+		if(nome != null) {
+			Page<Pessoa> pessoas = pessoaRepository.findByNomeContaining(nome, paginacao);
+			return PessoaDto.converter(pessoas);
+		}
+		
+		Page<Pessoa> pessoas = pessoaRepository.findAll(paginacao);
+		return PessoaDto.converter(pessoas);
+		
+//		if(cpf == null) {
+//			Page<Pessoa> pessoas = pessoaRepository.findAll(paginacao);
+//			return PessoaDto.converter(pessoas);
+//		}else {
+//			Page<Pessoa> pessoas = pessoaRepository.findByCpf(cpf, paginacao);
+//			return PessoaDto.converter(pessoas);
+//		}
 	}
 	
 	@Transactional
@@ -42,7 +55,7 @@ public class PessoaService {
         //realiza uma busca pelo CPF cadatrado, caso seja encontrado, devolve um erro
         Optional<Pessoa> pessoaBusca = pessoaRepository.findByCpf(pessoa.getCpf());
         if(pessoaBusca.isPresent()) {
-        	return ResponseEntity.badRequest().body("O CPF " + pessoa.getCpf() + " já está cadastrado");
+        	return ResponseEntity.badRequest().body("{\"erro\":\"O CPF " + pessoa.getCpf() + " já está cadastrado\"}");
         }else {
             try {
                 pessoaRepository.save(pessoa);
@@ -61,6 +74,20 @@ public class PessoaService {
             return ResponseEntity.ok(new PessoaDto(pessoa.get()));
         }
         return ResponseEntity.notFound().build();
+	}
+	
+	public ResponseEntity<?> calculaPesoIdealPessoa(Long id){
+        Optional<Pessoa> pessoa = pessoaRepository.findById(id);
+        double pesoIdeal;
+        if(pessoa.isPresent()){
+        	if(pessoa.get().getSexo() == 'M') {
+        		pesoIdeal = (pessoa.get().getPeso() * pessoa.get().getAltura()) - 58;
+        	}else {
+        		pesoIdeal = (pessoa.get().getPeso() * pessoa.get().getAltura()) - 44.7;
+        	}
+    		return ResponseEntity.ok("{\"pesoIdeal\":" +"\"" + pesoIdeal + "\""+  "}");
+        }
+        return ResponseEntity.notFound().build();	
 	}
 	
 	@Transactional

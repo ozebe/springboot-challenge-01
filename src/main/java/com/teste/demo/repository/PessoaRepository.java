@@ -11,4 +11,5 @@ import com.teste.demo.model.Pessoa;
 public interface PessoaRepository extends JpaRepository<Pessoa, Long>{
 	Optional<Pessoa> findByCpf(String cpf);
 	Page<Pessoa> findByCpf(String cpf, Pageable paginacao);
+	Page<Pessoa> findByNomeContaining(String nome, Pageable paginacao);
 }
